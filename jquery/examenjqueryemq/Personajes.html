@@ -1,0 +1,58 @@
+
+<div class="d-flex justify-content-center">
+    <button id="btnVolver"  class="btn btn-danger">
+        Volver
+    </button>
+</div>
+<table id="tablePersonajes" style="width : 70%; margin : 0 auto ; display : table" class="text-center mt-3 table table-dark">
+    <thead>
+        <tr>
+            <th>PERSONAJE</th>
+            <th>IMAGEN</th>            
+        </tr>
+    </thead>
+    <tbody>
+    
+    </tbody>
+</table>
+
+<script>
+    var urlApi = "https://apiseriespersonajes.azurewebsites.net";
+    $(document).ready(function() {
+        var idserie = $("#container").data("idserie");
+        cargarPersonajes(idserie);
+
+        $("#btnVolver").click(function() {
+            $("#container").load("./Serie.html").data("idserie" , idserie);
+        })
+    });
+    function cargarPersonajes(idserie) {
+        var request = "/api/Series/PersonajesSerie/"+idserie;
+        $.ajax({
+            url : urlApi + request
+            , type : "GET"
+            , dataType : "json"
+            , success : function (data) {
+                $(data).each(function(index,personaje) {
+                    
+                    var tr = $("<tr>")
+                    var tdNombre = $("<td>" , {
+                        text : personaje.nombre
+                    })
+                    var tdImagen = $("<td>");
+                    var img = $("<img>" , {
+                        src : personaje.imagen
+                        , style : "width: 200px"
+                    });
+                    tdImagen.append(img)
+
+                    tr.append(tdNombre, tdImagen);
+                    $("#tablePersonajes tbody").append(tr);
+                });
+            } , error : function (jqXHR,error,errorMsg){
+                console.log("ERROR " + errorMsg + " Mas info");
+                console.log(error + " ----------- " + jqXHR.getResponseHeader())
+            }
+        })
+    }
+</script>

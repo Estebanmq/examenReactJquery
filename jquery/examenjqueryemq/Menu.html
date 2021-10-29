@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+</head>
+<body>
+
+    <ul class="nav nav-pills p-3">
+        <li class="nav-item">
+            <img style="width : 100px; height :50px" src="./img/logo.png" />
+        </li>       
+        <li class="nav-item">                                    
+            <button style="background-color : transparent" class="text-secondary nav-link" id="btnHome">Home</button>
+        </li>
+        <li class="nav-item">                       
+            <button style="background-color : transparent" class="text-secondary nav-link" id="btnNuevoPersonaje">Nuevo Personaje</button>
+        </li>
+        <li class="nav-item">                       
+            <button style="background-color : transparent" class="text-secondary nav-link" id="btnModificarPersonaje">Modificar Personaje</button>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="text-secondary nav-link dropdown-toggle" href="" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Series</a>
+            <ul class="dropdown-menu" id="ulDropdownSeries">
+
+            </ul>
+        </li>
+
+    </ul>
+
+    <div id="container"></div>
+
+
+    <script src="./js/jquery-3.6.0.min.js"></script>
+    <script src="./js/popper.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script>
+        var urlApi = "https://apiseriespersonajes.azurewebsites.net";
+        $(document).ready(function() {
+            cargarSeries();
+
+            $("#btnHome").click(function() {
+                $("#container").empty();
+            });
+
+            $("#btnNuevoPersonaje").click(function () {
+                $("#container").load("./InsertarPersonaje.html");
+            })
+
+            $("#btnModificarPersonaje").click(function () {
+                $("#container").load("./ModificarPersonaje.html");
+            })
+
+        });
+        function cargarSeries() {
+            var request = "/api/Series";
+            $.ajax({
+                url : urlApi + request
+                , type : "GET"
+                , dataType : "json"
+                , success : function (data) {
+                    $(data).each(function(index , serie)  {
+                        var liSerie = $("<li>" , {
+                            class : "dropdown-item"                                                     
+                        });
+                        var button = $("<button>" , {
+                            "data-idserie" : serie.idSerie
+                            , text : serie.nombre
+                            , class : "text-secondary nav-link"
+                        });
+                        button.click(function() {                            
+                            $("#container").load("./Serie.html").data("idserie", $(this).data("idserie"));
+                        })
+                        
+                        $("#ulDropdownSeries").append(liSerie.append(button));
+                    })
+                } , error : function (jqXHR,error,errorMsg){
+                    console.log("ERROR " + errorMsg + " Mas info");
+                    console.log(error + " ----------- " + jqXHR.getResponseHeader())
+                }
+            })
+        }
+    </script>
+
+</body>
+</html>

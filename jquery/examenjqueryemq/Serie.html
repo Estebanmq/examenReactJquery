@@ -1,0 +1,52 @@
+
+   <div class="card mt-4" style="margin : 0 auto; width : 50%" id="divPadreSerie">
+
+  
+</div>
+
+<script>
+    var urlApi = "https://apiseriespersonajes.azurewebsites.net";
+    $(document).ready(function() {
+        cargarSerie($("#container").data("idserie"));
+    });
+    function cargarSerie(idserie) {
+        var request = "/api/Series/"+idserie;
+        $.ajax({
+            url : urlApi + request
+            , type : "GET"
+            , dataType : "json"
+            , success : function (data) {
+                var divDetallesSerie = $("<div>" , {
+                    class : "card-body"
+                });
+
+                var img = $("<img>" , {
+                    src : data.imagen
+                    , class : "card-img"
+                    
+                });
+                var h5Nombre = $("<h5>" , {
+                    text : data.nombre
+                    , class : "card-title"
+                });
+                var pPuntuacion = $("<p>" , {
+                    text : "IMDB: " + data.puntuacion 
+                    , class : "card-text"
+                });
+                var btnPersonajes = $("<button>" , {
+                    text : "Personajes"
+                    ,class : "btn btn-success"
+                    , "data-idserie" : data.idSerie
+                });
+                btnPersonajes.click(function() {
+                    $("#container").load("./Personajes.html").data("idserie", $(this).data("idserie"));
+                });
+                $("#divPadreSerie").append(img, divDetallesSerie.append(h5Nombre,pPuntuacion,btnPersonajes));
+                
+            } , error : function (jqXHR,error,errorMsg){
+                console.log("ERROR " + errorMsg + " Mas info");
+                console.log(error + " ----------- " + jqXHR.getResponseHeader())
+            }
+        })
+    }
+</script>
